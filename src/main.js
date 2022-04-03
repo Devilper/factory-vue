@@ -12,14 +12,23 @@ Vue.config.productionTip = false
 
 Vue.use(ElementUI)
 
-// const router = new VueRouter({
-//   mode:"history",
-//   base:__dirname,
-//   routes:[
-//     {path:"/", component:customers},
-//     {path:"/about", component:about},
-//   ]
-// })
+import "./assets/css/global.css";
+import "./assets/fonts/iconfont.css";
+// 导入 axios
+import axios from 'axios';
+Vue.prototype.$axios = axios;
+//配置基础地址
+axios.defaults.baseURL = 'http://127.0.0.1:8000/api/';
+//请求拦截器
+axios.interceptors.request.use(config =>{
+  config.headers.Authorization = window.sessionStorage.getItem('token');
+  return config;
+})
+
+
+import EleImport from 'vue-ele-import'
+Vue.component(EleImport.name, EleImport)
+
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
