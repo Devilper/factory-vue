@@ -15,7 +15,7 @@
             </el-input>
           </el-col>
           <el-col :span="3">
-            <el-button type="primary" @click="addPermVisible=!addPermVisible">添加权限</el-button>
+            <el-button type="primary" @click="addPermV">添加权限</el-button>
           </el-col>
         </el-row>
                  <!-- 渲染数据表格 -->
@@ -232,7 +232,14 @@ export default {
 	},
   // 添加行为
   methods: {
-    getPermList(){
+    addPermV(){
+      this.getPermList(10000);
+      this.addPermVisible = ! this.addPermVisible;
+    },
+    getPermList(page_size=0){
+      if (page_size !== 0){
+        this.queryInfo.page_size = page_size;
+      }
      this.$axios.get("http://127.0.0.1:8000/api/permission/list",  {params:this.queryInfo})
       .then(res=>{
         this.permList = res.data.list;
@@ -281,6 +288,7 @@ export default {
     editPerm(perm){
       console.log("pernm")
       console.log(this.menuInfo)
+      this.getPermList(100000);
       this.editPermVisible = true;
       this.editPermForm = perm;
     },

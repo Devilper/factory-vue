@@ -4,7 +4,7 @@
       <el-breadcrumb separator="/">
         <el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item>
         <el-breadcrumb-item>财务管理</el-breadcrumb-item>
-        <el-breadcrumb-item>工资列表</el-breadcrumb-item>
+        <el-breadcrumb-item>考勤管理</el-breadcrumb-item>
       </el-breadcrumb>
       <el-card>
             <!-- 搜索头部按钮 -->
@@ -23,11 +23,11 @@
             </el-col>
             <el-col :span="6">
                 <el-input v-model="queryInfo.user_name" placeholder="请输入内容" class="input-with-select" clearable >
-                <el-button slot="append" icon="el-icon-search" @click="searchSalary"></el-button>
+                <el-button slot="append" icon="el-icon-search" @click="searchAttendance"></el-button>
                 </el-input>
             </el-col>
             <el-col :span="4">
-                <!-- <el-button type="primary"  @click="exportSalaryVisible = !exportSalaryVisible">导入工资单</el-button> -->
+                <!-- <el-button type="primary"  @click="exportAttendanceVisible = !exportAttendanceVisible">导入工资单</el-button> -->
                  <ele-import
                     :fields="fields"
                     :filepath="filepath"
@@ -41,26 +41,23 @@
                     />
                     <el-button @click="handleOpen" type="primary">导入数据</el-button>  
             </el-col>
+            <el-col :span="1">
+                <el-button type="primary" @click="rfid">月度总结</el-button>
+            </el-col>
             
             </el-row>
              <el-table
-            :data="salaryList"
+            :data="attendanceList"
             height="250"
             :key="dataKey"
             border
             style="width: 100%">
                 <el-table-column prop="id" label="编号" width="180"></el-table-column>
                 <el-table-column prop="staff_name.username" label="名字" width="180"> </el-table-column>
-                <el-table-column prop="attend_days" label="出勤"> </el-table-column>
-                <el-table-column prop="leave_days" label="请假"> </el-table-column>
-                <el-table-column prop="overtime" label="加班时长"> </el-table-column>
-                <el-table-column prop="base_salary" label="基础工资"> </el-table-column>
-                <el-table-column prop="overtime_salary" label="加班工资"> </el-table-column>
-                <el-table-column prop="kouchu" label="应扣"> </el-table-column>
-                <el-table-column prop="allowance" label="补贴"> </el-table-column>
-                <el-table-column prop="should_pay" label="应发"> </el-table-column>
-                <el-table-column prop="tax" label="个人所得税"> </el-table-column>
-                <el-table-column prop="actual_pay" label="实发"> </el-table-column>
+                <el-table-column prop="flag_leave" label="请假" :formatter = "formatter_flag_leave"> </el-table-column>
+                <el-table-column prop="flag_business" label="出差" :formatter = "formatter_flag_business"> </el-table-column>
+                <el-table-column prop="start_time" label="上班时间"> </el-table-column>
+                <el-table-column prop="end_time" label="下班时间"> </el-table-column>
                 <el-table-column prop="current_time" label="日期"> </el-table-column>
             </el-table>
 
@@ -78,14 +75,14 @@
 
         <!-- 导入数据-->
 	 
-        <!-- <el-dialog align="left" title="工资单导入" :visible.sync="exportSalaryVisible" width="50%" > -->
+        <!-- <el-dialog align="left" title="工资单导入" :visible.sync="exportAttendanceVisible" width="50%" > -->
             <!--主体部分 -->
             <!-- <div> -->
                
             <!-- </div> -->
             
             <!-- <span slot="footer" class="dialog-footer">
-                <el-button @click="exportSalaryVisible = false">取 消</el-button>
+                <el-button @click="exportAttendanceVisible = false">取 消</el-button>
                 <el-button type="primary" >确 定</el-button>
             </span>
         </el-dialog> -->
@@ -95,6 +92,40 @@
 <script>
 export default {
     data(){
+        var validateFlagBusiness = (rule, value, callback) => {
+        if (value === true) {
+            if (this.fields.flag_leave === true){
+                callback(new Error('请假和出差不能同时为是'));
+            }
+          
+        } else {
+          callback();
+        }
+      };
+      var validateStartTime = (rule, value, callback) => {
+        if (value === "") {
+            if (this.fields.flag_leave === false){
+                callback(new Error('没有请假状态状态下 上班时间必填'));
+            }
+          
+        } else {
+          if (this.fields.end_time < value) {
+               callback(new Error('上班时间不能晚于下班时间'));
+          }
+        }
+      };
+      var validateEndTime = (rule, value, callback) => {
+        if (value === "") {
+            if (this.fields.flag_leave === false){
+                callback(new Error('没有请假状态状态下 上班时间必填'));
+            }
+          
+        } else {
+          if (this.fields.start_time > value) {
+               callback(new Error('下班时间不能早于上班时间'));
+          }
+        }
+      };
         return{
           queryInfo:{
           user_name:"",
@@ -105,128 +136,64 @@ export default {
         },
         value1:[],
         total:0,
-        exportSalaryVisible:false,
+        exportAttendanceVisible:false,
         dataKey:false,
-        salaryList:[
+        attendanceList:[
             {
-                attend_days: 22.5,
-                leave_days: 10.5,
-                overtime: 10,
-                base_salary: 1000,
-                overtime_salary: 100000,
-                kouchu: 119.9,
-                allowance: 20.01,
-                should_pay: 200.1,
-                tax: 110,
-                actual_pay: 20,
+                current_time: "",
+                flag_leave: false,
+                flag_business: false,
+                start_time: "",
+                end_time: "",
+                supplement: "",
                 id: 1,
-			    current_time: "2022-04-06",
                 staff_name: {
                     username: "",
                 },
             }
         ],
         // 弹窗的标题
-        title: '导入工资单',
+        title: '导入考勤    单',
         // 提示信息
-        tips: ['都是必填项'],
+        tips: ['名字','日期','是必填项'],
         // 假如数据库中是`name`字段, 而Excel模板列是`名字`, 就需要写成 name: '名字'
         // ele-import 内部会抛弃非定义在fields里的列
         fields: {
           staff_name: '名字',
-          attend_days: '出勤',
-          leave_days: '请假',
-          overtime: '加班时长',
-          base_salary: '基础工资',
-          overtime_salary: '加班工资',
-          kouchu: '应扣',
-          allowance: '补贴',
-          should_pay: '应发',
-          tax: '个人所得税',
-          actual_pay: '实发',
+          flag_leave: '请假',
+          flag_business: '出差',
+          start_time: '上班时间',
+          end_time: '下班时间',
+          supplement: '额外',
           current_time: '日期',
         },
-        // formatter起到替换数据的作用
-        // formatter: {
-        //   // 可以是对象, 在发送请求时, '深圳' 将被替换成 1, '广州' 被替换成 2
-        //   city: {
-        //     1: '深圳',
-        //     2: '广州'
-        //   },
-          // 可以是函数, 在发送请求时, `age` 将加1, 例如 原数据是 19 -> 20
-        //   age: function(value, row) {
-        //     return value + 1
-        //   }
-        // },
-        // // 附加数据, 在每条记录上都会加这两个字段和值
-        // append: {
-        //   company: '腾讯',
-        //   leader: '小马哥'
-        // },
-        // 参数校检, 和 element-ui 中 form表单中传递的rules一样, 都是使用的 async-validator 库
-        // https://element.eleme.cn/#/zh-CN/component/form#biao-dan-yan-zheng
         rules: {
           staff_name: { type: 'string', required: true, message: '名字必填' },
-          attend_days: [
-            {  required: true, message: '出勤必填' },
-            { type: 'number', message: '出勤天数必须为数字' },
-          ],
-          leave_days: [
-            {  required: true, message: '请假必填' },
-            { type: 'number', message: '请假天数必须为数字' },
-          ],
-          overtime: [
-            {  required: true, message: '加班时长必填' },
-            { type: 'number', message: '加班时长必须为数字' },
-          ],
-          base_salary: [
-            {  required: true, message: '基础工资必填' },
-            { type: 'number', message: '基础工资必须为数字' },
-          ],
-          overtime_salary: [
-            {  required: true, message: '加班工资必填' },
-            { type: 'number', message: '加班工资必须为数字' },
-          ],
-          kouchu: [
-            {  required: true, message: '应扣必填' },
-            { type: 'number', message: '应扣必须为数字' },
-          ],
-          allowance: [
-            { required: true, message: '补贴必填' },
-            { type: 'number', message: '补贴必须为数字' },
-          ],
-          should_pay: [
-            {  required: true, message: '应发必填' },
-            { type: 'number', message: '应发必须为数字' },
-          ],
-          tax: [
-            {  required: true, message: '个人所得税必填' },
-            { type: 'number', message: '个人所得税必须为数字' },
-          ],
-          actual_pay: [
-            { required: true, message: '实发必填' },
-            { type: 'number', message: '实发必须为数字' },
+          flag_business: [
+            { validator: validateFlagBusiness, trigger: 'blur' }
           ],
           current_time: {required: true, message: '日期必填' },
         },
         // Excel模板下载地址
         // 注意, 只能是.xlsx的文件, .xls或者.cvs都会报错
         filepath:
-          '../../static/salary.xlsx',
+          '../../static/attendance.xlsx',
         // 控制弹窗, 和dialog的visible一样
         // https://element.eleme.cn/#/zh-CN/component/dialog
         visible: false
         }  
     },
+    
     methods: {
-        get_salary_list(){
-          if(this.value1 !== null && this.value1.length > 0){
+        get_attendance_list(){
+            if(this.value1 !== null && this.value1.length > 0){
                 this.queryInfo.start_time = this.value1[0]
                 this.queryInfo.end_time = this.value1[1]
             }
-            this.$axios.get("http://127.0.0.1:8000/api/finance/list",  {params: this.queryInfo})
+            
+            this.$axios.get("http://127.0.0.1:8000/api/attendance/list",  {params: this.queryInfo})
             .then(res=>{
-                this.salaryList = res.data.list;
+                this.attendanceList = res.data.list;
                 this.total = res.data.pagination.total;
                 this.dataKey = !this.dataKey;
                 console.log(res.data)
@@ -234,13 +201,13 @@ export default {
         },
         requestFn(data) {
             console.log(data)
-            this.$axios.post("http://127.0.0.1:8000/api/finance/create",  {list:data})
+            this.$axios.post("http://127.0.0.1:8000/api/attendance/create",  {list:data})
             .then(res=>{
                 // this.permList = res.data.list;
                 // this.total = res.data.pagination.total;
                 // this.permissionInfo = res.data.list;
                 // this.dataKey = !this.dataKey;
-                this.get_salary_list();
+                this.get_attendance_list();
             })
         // 演示代码
         // 1、如果没有针对ele-import做过接口约定, 可以采用如下形式:
@@ -268,30 +235,57 @@ export default {
       handleOpen() {
         this.visible = true
       },
-      searchSalary(){
-          this.get_salary_list();
+      searchAttendance(){
+          console.log("ssss")
+          this.get_attendance_list();
       },
       // 每页数据条数发生改变
       sizeChange(newpagesize){
         this.queryInfo.page_size = newpagesize;
-        this.get_salary_list();
+        this.get_attendance_list();
       },
         // 当前页码发生改变
       currentChange(newpage){
         this.queryInfo.page = newpage;
-        this.get_salary_list();
+        this.get_attendance_list();
       },
-       pickerChangeFn(value){
+      formatter_flag_leave(row, index) {undefined
+        if (row.flag_leave == true) {undefined
+            row.flag_leave = "是"
+        }
+        if(row.flag_leave == false) {undefined
+            row.flag_leave = "否"
+        }
+        return row.flag_leave
+        },
+      formatter_flag_business(row, index) {undefined
+        if (row.flag_business == true) {undefined
+            row.flag_business = "是"
+        }
+        if(row.flag_business == false) {undefined
+            row.flag_business = "否"
+        }
+        return row.flag_business
+        },  
+      pickerChangeFn(value){
           if (value === null){
                this.queryInfo.start_time="";
                this.queryInfo.end_time="";
           }
           console.log(this.queryInfo)
       },
+      rfid(row, index){
+            // @ts-ignore
+            // @ts-ignore
+            this.$router.push({path: 'month',//rooter配置的name值
+            });
+        }
     },
     mounted() {
-      this.get_salary_list();
+      this.get_attendance_list();
 	},
+    
 }
+
 </script>
 

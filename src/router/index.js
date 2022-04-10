@@ -56,6 +56,16 @@ const routes = [
       component:()=>import('../components/finance/Salary.vue')
       },
       {
+        path: '/attendance',
+        name: 'Attendance',
+        component:()=>import('../components/finance/Attendance.vue')
+        },
+      {
+        path: '/month',
+        name: 'Month',
+        component:()=>import('../components/finance/Month.vue')
+        },
+      {
       path: '/unit',
       name: 'Unit',
       component:()=>import('../components/assert/Unit.vue')
@@ -64,6 +74,16 @@ const routes = [
       path: '/repair',
       name: 'Repair',
       component:()=>import('../components/assert/Repair.vue')
+      },
+      {
+        path: '/product',
+        name: 'Product',
+        component:()=>import('../components/warehouse/Product.vue')
+      },
+      {
+        path: '/goods',
+        name: 'Goods',
+        component:()=>import('../components/warehouse/Goods.vue')
       },
     ]
   }

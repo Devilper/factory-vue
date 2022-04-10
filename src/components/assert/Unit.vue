@@ -138,6 +138,7 @@ export default {
           page_size:10,
         },
         addUnitVisible:false,
+        editUnitVisible:false,
          // 当前数据总数
         total:0,
         unitList:[
