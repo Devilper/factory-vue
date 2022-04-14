@@ -85,6 +85,26 @@ const routes = [
         name: 'Goods',
         component:()=>import('../components/warehouse/Goods.vue')
       },
+      {
+        path: '/diary',
+        name: 'Diary',
+        component:()=>import('../components/warehouse/Diary.vue')
+      },
+      {
+        path: '/good_warehouse',
+        name: 'GoodWarehouse',
+        component:()=>import('../components/warehouse/GoodWarehouse.vue')
+      },
+      {
+        path: '/product_warehouse',
+        name: 'ProductWarehouse',
+        component:()=>import('../components/warehouse/ProductWarehouse.vue')
+      },
+      {
+        path: '/purchase',
+        name: 'Purchase',
+        component:()=>import('../components/warehouse/Purchase.vue')
+      },
     ]
   }
 ]
