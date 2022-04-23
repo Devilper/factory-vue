@@ -6,3 +6,5 @@ services:
     build: .
     ports:                          #端口映射
       - 80:80
+    networks:
+     - my-net
