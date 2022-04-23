@@ -4,7 +4,7 @@
     <div class="login_box">
         <!-- 头像 -->
         <div class="avatar_box">
-              <img src="../assets/logo.png" alt="">  
+              <img src="../assets/factory.png" alt="">  
         </div>
         <!-- 登录表单 -->
         <el-form :model="loginForm" :rules="loginFormRules" ref="loginFormRef" label-width="0px" class="login_form">
@@ -73,7 +73,7 @@ export default {
                   return
               }
               // 发送请求进行登录
-              const { data: res } = await this.$axios.post('http://127.0.0.1:8000/api/login', this.loginForm)
+              const { data: res } = await this.$axios.post(this.api + '/login', this.loginForm)
               console.log(res)
               if (res.error !== null) {
                   return this.$message.error('登录失败：' + res.error.desc)

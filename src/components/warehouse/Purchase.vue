@@ -32,11 +32,11 @@
         <el-table
         :data="PurchaseList"
         :key="dataKey"
-        height="250"
+        height="100%"
         border
         style="width: 100%">
             <el-table-column type="index" label="编号" width="180"></el-table-column>
-            <el-table-column prop="good_name" label="原料" width="180"> </el-table-column>
+            <el-table-column prop="good_name.good_name" label="原料" width="180"> </el-table-column>
             <el-table-column prop="good_version" label="型号"> </el-table-column>
             <el-table-column prop="good_num" label="数量"> </el-table-column>
             <el-table-column prop="price" label="价格"> </el-table-column>
@@ -212,7 +212,7 @@ export default {
             apply_staff_name: {},
             buyer_date: "",
             buyer_name: {},
-            good_name: "",
+            good_name: {},
             good_num: "",
             good_version: "",
             price: "",
@@ -279,7 +279,7 @@ export default {
     },
     // 产品信息
     getGoodList(){
-      this.$axios.get("http://127.0.0.1:8000/api/good/list")
+      this.$axios.get(this.api + "/good/list")
       .then(res=>{
         this.goodInfo = res.data.list;
       })
@@ -289,7 +289,7 @@ export default {
       if (this.queryInfo.status === ""){
           this.queryInfo.status = 0;
       }
-      this.$axios.get("http://127.0.0.1:8000/api/purchase/list", {params:this.queryInfo})
+      this.$axios.get(this.api + "/purchase/list", {params:this.queryInfo})
       .then(res=>{
         this.PurchaseList = res.data.list;
         this.total = res.data.pagination.total;
@@ -312,7 +312,7 @@ export default {
       //校验规则
       this.$refs.addPurchaseFormRef.validate((valid)=>{
         if(!valid) return alert("请输入正确的信息")
-        this.$axios.post('http://127.0.0.1:8000/api/purchase/create', this.addPurchaseForm)
+        this.$axios.post(this.api + '/purchase/create', this.addPurchaseForm)
             .then(res=>{
             // 刷新列表
             this.getPurchaseList();
@@ -330,7 +330,7 @@ export default {
     },
     // 编辑用户信息
     editPurchaseInfo(){
-      this.$axios.put('http://127.0.0.1:8000/api/purchase/update', this.editPurchaseForm)
+      this.$axios.put(this.api + '/purchase/update', this.editPurchaseForm)
       .then(res=>{
         this.getPurchaseList()
       });
@@ -340,14 +340,14 @@ export default {
     },
     // 审核
     auditPurchase(purchase){
-        this.$axios.get('http://127.0.0.1:8000/api/purchase/audit', {params:{id:purchase.id}})
+        this.$axios.get(this.api + '/purchase/audit', {params:{id:purchase.id}})
         .then(res=>{
         this.getPurchaseList()
       });
     },
     //采购
     purchasePurchase(purchase){
-        this.$axios.get('http://127.0.0.1:8000/api/purchase/purchase', {params:{id:purchase.id}})
+        this.$axios.get(this.api + '/purchase/purchase', {params:{id:purchase.id}})
             .then(res=>{
             this.getPurchaseList()
       });

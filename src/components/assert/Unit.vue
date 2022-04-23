@@ -20,7 +20,7 @@
          <!-- 渲染数据表格 -->
         <el-table
         :data="unitList"
-        height="250"
+        height="100%"
         :key="dataKey"
         border
         style="width: 100%">
@@ -193,7 +193,7 @@ export default {
   methods:{
       //请求列表数据
     getUnitList(){
-      this.$axios.get('http://127.0.0.1:8000/api/unit/list', {params:this.queryInfo})
+      this.$axios.get(this.api + '/unit/list', {params:this.queryInfo})
         .then(res=>{
           console.log(res.data)
           this.unitList = res.data.list;
@@ -204,7 +204,7 @@ export default {
     },
        //请求用户列表数据
     getUserList(){
-      this.$axios.get('http://127.0.0.1:8000/api/user/list', {params:{page_size:1000000}})
+      this.$axios.get(this.api + '/user/list', {params:{page_size:1000000}})
         .then(res=>{
           this.userInfo = res.data.list;
       })
@@ -227,7 +227,7 @@ export default {
       //校验规则
       this.$refs.addUnitFormRef.validate((valid)=>{
         if(!valid) return alert("请输入正确的信息")
-        this.$axios.post('http://127.0.0.1:8000/api/unit/create', this.addUnitForm)
+        this.$axios.post(this.api + '/unit/create', this.addUnitForm)
             .then(res=>{
             // todo
             this.getUnitList();
@@ -244,7 +244,7 @@ export default {
     editUnitInfo(){
         this.$refs.addUnitFormRef.validate((valid)=>{
         if(!valid) return alert("请输入正确的信息")
-        this.$axios.put('http://127.0.0.1:8000/api/unit/update', this.editUnitForm)
+        this.$axios.put(this.api + '/unit/update', this.editUnitForm)
             .then(res=>{
             // todo// 刷新列表
             this.getUnitList();

@@ -104,20 +104,20 @@ export default {
   },
   methods:{
       getGoodsList(){
-          this.$axios.get("http://127.0.0.1:8000/api/good/list",  {params:this.queryInfo})
+          this.$axios.get(this.api + "/good/list",  {params:this.queryInfo})
             .then(res=>{
                 this.goodList = res.data.list;
             })
       },
       addGoods(){
-          this.$axios.post("http://127.0.0.1:8000/api/good/create",  this.addGoodsForm)
+          this.$axios.post(this.api + "/good/create",  this.addGoodsForm)
             .then(res=>{
                 this.getGoodsList();
             })
             this.addGoodsVisible = !this.addGoodsVisible;
       },
       editGoods(){
-        this.$axios.put("http://127.0.0.1:8000/api/good/update",  this.editGoodsForm)
+        this.$axios.put(this.api + "/good/update",  this.editGoodsForm)
             .then(res=>{
                 this.getGoodsList();
             })

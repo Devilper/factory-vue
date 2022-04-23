@@ -48,7 +48,7 @@
             </el-row>
              <el-table
             :data="attendanceList"
-            height="250"
+            height="100%"
             :key="dataKey"
             border
             style="width: 100%">
@@ -56,8 +56,16 @@
                 <el-table-column prop="staff_name.username" label="名字" width="180"> </el-table-column>
                 <el-table-column prop="flag_leave" label="请假" :formatter = "formatter_flag_leave"> </el-table-column>
                 <el-table-column prop="flag_business" label="出差" :formatter = "formatter_flag_business"> </el-table-column>
-                <el-table-column prop="start_time" label="上班时间"> </el-table-column>
-                <el-table-column prop="end_time" label="下班时间"> </el-table-column>
+                <el-table-column prop="start_time" label="上班时间">
+                    <span slot-scope="scope">
+                      {{scope.row.start_time| format}}
+                    </span>
+                </el-table-column>
+                <el-table-column prop="end_time" label="下班时间">
+                    <span slot-scope="scope">
+                      {{scope.row.end_time| format}}
+                    </span>
+                </el-table-column>
                 <el-table-column prop="current_time" label="日期"> </el-table-column>
             </el-table>
 
@@ -191,7 +199,7 @@ export default {
                 this.queryInfo.end_time = this.value1[1]
             }
             
-            this.$axios.get("http://127.0.0.1:8000/api/attendance/list",  {params: this.queryInfo})
+            this.$axios.get(this.api + "/attendance/list",  {params: this.queryInfo})
             .then(res=>{
                 this.attendanceList = res.data.list;
                 this.total = res.data.pagination.total;
@@ -201,7 +209,7 @@ export default {
         },
         requestFn(data) {
             console.log(data)
-            this.$axios.post("http://127.0.0.1:8000/api/attendance/create",  {list:data})
+            this.$axios.post(this.api + "/attendance/create",  {list:data})
             .then(res=>{
                 // this.permList = res.data.list;
                 // this.total = res.data.pagination.total;

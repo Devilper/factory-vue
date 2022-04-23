@@ -105,6 +105,16 @@ const routes = [
         name: 'Purchase',
         component:()=>import('../components/warehouse/Purchase.vue')
       },
+      {
+        path: '/info',
+        name: 'Person',
+        component:()=>import('../components/user/Person.vue')
+      },
+      {
+        path: '/order',
+        name: 'Orders',
+        component:()=>import('../components/order/ProductOrder.vue')
+      },
     ]
   }
 ]

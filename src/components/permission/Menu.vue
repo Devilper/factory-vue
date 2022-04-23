@@ -1,12 +1,12 @@
 <template>
-    <div>
+    <div class="card">
       <!-- 面包屑导航 -->
       <el-breadcrumb separator="/">
         <el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item>
         <el-breadcrumb-item>权限管理</el-breadcrumb-item>
         <el-breadcrumb-item>菜单列表</el-breadcrumb-item>
       </el-breadcrumb>
-      <el-card>
+      <el-card class="card">
         <!-- 搜索头部按钮 -->
         <el-row :gutter="14">
           <el-col :span="6">
@@ -19,12 +19,17 @@
           </el-col>
         </el-row>
                  <!-- 渲染数据表格 -->
+        <!-- <div style="height: 80vh;"> -->
+
+        
         <el-table
+        ref="qualityData"
         :data="menuList"
         :key="dataKey"
-        height="250"
+        height="100%"
         border
-        style="width: 100%">
+        style="width: 100%"
+        max-height="tableHeights">
             <el-table-column type="index" label="编号" width="180"></el-table-column>
             <el-table-column prop="title" label="菜单" width="180"> </el-table-column>
             <!-- <el-table-column prop="desc" label="描述"> </el-table-column> -->
@@ -42,16 +47,16 @@
               </template>
             </el-table-column>
         </el-table>
-
-        <el-pagination
-          @size-change="sizeChange"
-          @current-change="currentChange"
-          :current-page.sync="queryInfo.page"
-          :page-sizes="[1,10,20,50]"
-          :page-size="queryInfo.page_size"
-          layout="prev, pager, next, sizes, total"
-          :total="total">
-        </el-pagination>
+        <!-- </div> -->
+          <el-pagination
+            @size-change="sizeChange"
+            @current-change="currentChange"
+            :current-page.sync="queryInfo.page"
+            :page-sizes="[1,10,20,50]"
+            :page-size="queryInfo.page_size"
+            layout="prev, pager, next, sizes, total"
+            :total="total">
+          </el-pagination>
       </el-card>
 
            <!-- 添加角色对话框 -->
@@ -195,12 +200,12 @@ export default {
       }
   },
   mounted() {
-      this.getMenuList();
+    this.getMenuList();
 	},
   // 添加行为
   methods: {
     getMenuList(){
-      this.$axios.get("http://127.0.0.1:8000/api/menu/list", {params:this.queryInfo})
+      this.$axios.get(this.api + "/menu/list", {params:this.queryInfo})
       .then(res=>{
         console.log(res.data)
         this.menuList = res.data.list;
@@ -223,7 +228,7 @@ export default {
       //校验规则
       this.$refs.addMenuFormRef.validate((valid)=>{
         if(!valid) return alert("请输入正确的信息")
-        this.$axios.post('http://127.0.0.1:8000/api/menu/create', this.addMenuForm)
+        this.$axios.post(this.api + '/menu/create', this.addMenuForm)
             .then(res=>{
             // todo
         })
@@ -240,7 +245,7 @@ export default {
     },
     // 删除用户
     deleteMenu(role){
-      this.$axios.delete('http://127.0.0.1:8000/api/menu/delete', {params:{r_id:role.id}})
+      this.$axios.delete(this.api + '/menu/delete', {params:{r_id:role.id}})
             .then(res=>{
               this.getMenuList();
         });
@@ -248,7 +253,7 @@ export default {
     // 编辑用户信息
     editMenuInfo(){
       console.log(this.editMenuForm)
-      this.$axios.put('http://127.0.0.1:8000/api/menu/update', this.editMenuForm)
+      this.$axios.put(this.api + '/menu/update', this.editMenuForm)
       .then(res=>{
         console.log(res)
       });
@@ -257,10 +262,21 @@ export default {
     },
     create(){
       this.getMenuList();
-    }
+    },
+    getHeight() {
+            this.$nextTick(() => {
+                let height = this.$refs.qualityInput.offsetHeight;
+                this.tableHeight = window.innerHeight - 220 - height;
+            })
+        },
   }
 }
 </script>
 <style scoped="scoped">
- 
+  .card {
+      height: 100%;
+  }
+  .footer {
+    height: 50px;
+  }
 </style>

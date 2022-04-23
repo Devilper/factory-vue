@@ -45,7 +45,7 @@
             </el-row>
              <el-table
             :data="salaryList"
-            height="250"
+            height="100%"
             :key="dataKey"
             border
             style="width: 100%">
@@ -224,7 +224,7 @@ export default {
                 this.queryInfo.start_time = this.value1[0]
                 this.queryInfo.end_time = this.value1[1]
             }
-            this.$axios.get("http://127.0.0.1:8000/api/finance/list",  {params: this.queryInfo})
+            this.$axios.get(this.api + "/finance/list",  {params: this.queryInfo})
             .then(res=>{
                 this.salaryList = res.data.list;
                 this.total = res.data.pagination.total;
@@ -234,7 +234,7 @@ export default {
         },
         requestFn(data) {
             console.log(data)
-            this.$axios.post("http://127.0.0.1:8000/api/finance/create",  {list:data})
+            this.$axios.post(this.api + "/finance/create",  {list:data})
             .then(res=>{
                 // this.permList = res.data.list;
                 // this.total = res.data.pagination.total;

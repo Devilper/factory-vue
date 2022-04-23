@@ -22,7 +22,8 @@
         <el-col :span="2" v-for="(product) in productList" :key="product.id">  
             <el-card :body-style="{ padding: '15px' ,spacing: '10px'}">
             <div style="padding: 10px;">
-                <span>{{product.product_name}}</span>
+                <p>产品: {{product.product_name}}</p>
+                <p>型号: {{product.product_version}}</p>
                 <div class="bottom clearfix">
                 <el-button type="text" class="button" @click="editGoodInfo(product)">编辑</el-button>
                 </div>
@@ -33,7 +34,7 @@
        </el-card>
            <!-- 添加角色对话框 -->
      <el-dialog
-      title="添加角色"
+      title="添加产品"
       :visible.sync="addProductVisible"
       width="50%"
       align="left">
@@ -41,6 +42,9 @@
       <el-form :model="addProductForm" :rules="addProductFormRul" ref="addProductFormRef" label-width="100px" class="demo-ruleForm">
         <el-form-item label="产品名称" prop="product_name" >
           <el-input v-model="addProductForm.product_name"></el-input>
+        </el-form-item>
+        <el-form-item label="产品型号" prop="product_version" >
+          <el-input v-model="addProductForm.product_version"></el-input>
         </el-form-item>
       </el-form>
 
@@ -61,6 +65,9 @@
         <el-form-item label="产品名称" prop="product_name" >
           <el-input v-model="editProductForm.product_name"></el-input>
         </el-form-item>
+        <el-form-item label="产品型号" prop="product_version" >
+          <el-input v-model="editProductForm.product_version"></el-input>
+        </el-form-item>
       </el-form>
 
       <span slot="footer" class="dialog-footer">
@@ -78,7 +85,8 @@ export default {
           productList:[
               {
                   id:0,
-                  product_name:"1"
+                  product_name:"",
+                  product_version:"",
               },
 
           ],
@@ -88,11 +96,13 @@ export default {
               query:""
           },
           addProductForm:{
-              product_name:""
+              product_name:"",
+              product_version:"",
           },
           editProductForm:{
               id:"",
-              product_name:""
+              product_name:"",
+              product_version:"",
           },
           addProductFormRul:{
               product_name: [
@@ -104,20 +114,20 @@ export default {
   },
   methods:{
       getProductList(){
-          this.$axios.get("http://127.0.0.1:8000/api/product/list",  {params:this.queryInfo})
+          this.$axios.get(this.api + "/product/list",  {params:this.queryInfo})
             .then(res=>{
                 this.productList = res.data.list;
             })
       },
       addProduct(){
-          this.$axios.post("http://127.0.0.1:8000/api/product/create",  this.addProductForm)
+          this.$axios.post(this.api + "/product/create",  this.addProductForm)
             .then(res=>{
                 this.getProductList();
             })
             this.addProductVisible = !this.addProductVisible;
       },
       editProduct(){
-        this.$axios.put("http://127.0.0.1:8000/api/product/update",  this.editProductForm)
+        this.$axios.put(this.api + "/product/update",  this.editProductForm)
             .then(res=>{
                 this.getProductList();
             })

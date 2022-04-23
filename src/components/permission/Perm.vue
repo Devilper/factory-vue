@@ -21,7 +21,7 @@
                  <!-- 渲染数据表格 -->
         <el-table
         :data="permList"
-        height="250"
+        height="100%"
         :key="dataKey"
         border
         style="width: 100%">
@@ -240,7 +240,7 @@ export default {
       if (page_size !== 0){
         this.queryInfo.page_size = page_size;
       }
-     this.$axios.get("http://127.0.0.1:8000/api/permission/list",  {params:this.queryInfo})
+     this.$axios.get(this.api + "/permission/list",  {params:this.queryInfo})
       .then(res=>{
         this.permList = res.data.list;
         this.total = res.data.pagination.total;
@@ -249,7 +249,7 @@ export default {
       })
     },
     getMenuList(){
-      this.$axios.get("http://127.0.0.1:8000/api/menu/list",{params: {page_size: 100000}})
+      this.$axios.get(this.api + "/menu/list",{params: {page_size: 100000}})
       .then(res=>{
         console.log(res.data)
         this.menuInfo = res.data.list;
@@ -273,7 +273,7 @@ export default {
         if(!valid) return alert("请输入正确的信息")
         console.log("perm")
         console.log(this.addPermForm)
-        this.$axios.post('http://127.0.0.1:8000/api/permission/create', this.addPermForm)
+        this.$axios.post(this.api + '/permission/create', this.addPermForm)
             .then(res=>{
             // todo
         })
@@ -294,7 +294,7 @@ export default {
     },
     // 编辑权限信息
     editPermInfo(){
-      this.$axios.put('http://127.0.0.1:8000/api/permission/update', this.editPermForm)
+      this.$axios.put(this.api + '/permission/update', this.editPermForm)
       .then(res=>{
         console.log(res)
         this.getPermList()

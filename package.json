@@ -13,6 +13,7 @@
     "axios": "^0.26.1",
     "element-ui": "^2.15.6",
     "file-saver": "^2.0.5",
+    "moment": "^2.29.2",
     "vue": "^2.5.2",
     "vue-ele-import": "^1.1.1",
     "vue-router": "^3.5.3",

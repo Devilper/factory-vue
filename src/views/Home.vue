@@ -3,7 +3,7 @@
 		 <!-- 头部 -->
        <el-header>
 		   <div>
-			    <img src="../assets/logo.png"  />
+			    <img src="../assets/factory.png"  />
 				<span>工厂管理系统</span>
 		   </div>
 		  
@@ -103,7 +103,7 @@ export default {
 		window.sessionStorage.setItem('activePath',path);
 	},
 	get_menu_tree(){
-	this.$axios.get('http://127.0.0.1:8000/api/menu/tree').then(res=>{
+	this.$axios.get(this.api + '/menu/tree').then(res=>{
 		console.log(res);
 		this.menulists = res.data.list;
 		

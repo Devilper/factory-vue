@@ -20,7 +20,7 @@
          <!-- 渲染数据表格 -->
         <el-table
         :data="repairList"
-        height="250"
+        height="100%"
         border
         :key="dataKey"
         style="width: 100%">
@@ -283,7 +283,7 @@ export default {
   methods:{
       //请求用户列表数据
     getRepairList(){
-      this.$axios.get('http://127.0.0.1:8000/api/repair/list', {params:this.queryInfo})
+      this.$axios.get(this.api + '/repair/list', {params:this.queryInfo})
         .then(res=>{
           console.log(res.data)
           this.repairList = res.data.list;
@@ -293,14 +293,14 @@ export default {
     },
         //请求用户列表数据
     getUserList(){
-      this.$axios.get('http://127.0.0.1:8000/api/user/list', {params:{page_size:1000000}})
+      this.$axios.get(this.api + '/user/list', {params:{page_size:1000000}})
         .then(res=>{
           this.userInfo = res.data.list;
       })
     },
           //请求列表数据
     getUnitList(){
-      this.$axios.get('http://127.0.0.1:8000/api/unit/list', {params:{page_size:1000000}})
+      this.$axios.get(this.api + '/unit/list', {params:{page_size:1000000}})
         .then(res=>{
           console.log(res.data)
           this.unitInfo = res.data.list;
@@ -327,7 +327,7 @@ export default {
       //校验规则
       this.$refs.addRepairFormRef.validate((valid)=>{
         if(!valid) return alert("请输入正确的信息")
-        this.$axios.post('http://127.0.0.1:8000/api/repair/create', this.addRepairForm)
+        this.$axios.post(this.api + '/repair/create', this.addRepairForm)
             .then(res=>{
             // todo
             this.getRepairList();
@@ -339,7 +339,7 @@ export default {
     editRepairInfo(){
       this.$refs.addRepairFormRef.validate((valid)=>{
         if(!valid) return alert("请输入正确的信息")
-        this.$axios.put('http://127.0.0.1:8000/api/repair/update', this.editRepairForm)
+        this.$axios.put(this.api + '/repair/update', this.editRepairForm)
             .then(res=>{
             // todo// 刷新列表
             this.getRepairList();

@@ -36,7 +36,7 @@
             </el-row>
              <el-table
             :data="monthList"
-            height="250"
+            height="100%"
             :key="dataKey"
             border
             style="width: 100%">
@@ -99,7 +99,7 @@ export default {
             this.queryInfo.current_time = this.value1
             console.log(this.current_time)
             console.log(this.value1)
-            this.$axios.get("http://127.0.0.1:8000/api/attendance/info",  {params: this.queryInfo})
+            this.$axios.get(this.api + "/attendance/info",  {params: this.queryInfo})
             .then(res=>{
                 this.monthList = res.data.list;
                 this.dataKey = !this.dataKey;
@@ -115,7 +115,7 @@ export default {
           console.log(this.queryInfo)
       },
     getUserList(){
-      this.$axios.get('http://127.0.0.1:8000/api/user/list', {params:{page_size:1000000}})
+      this.$axios.get(this.api + '/user/list', {params:{page_size:1000000}})
         .then(res=>{
           this.userInfo = res.data.list;
       })

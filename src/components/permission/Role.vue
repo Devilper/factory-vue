@@ -22,7 +22,7 @@
         <el-table
         :data="roleList"
         :key="dataKey"
-        height="250"
+        height="100%"
         border
         style="width: 100%">
             <el-table-column type="index" label="编号" width="180"></el-table-column>
@@ -198,14 +198,14 @@ export default {
   methods: {
     // 权限信息
     getPermissionList(){
-      this.$axios.get("http://127.0.0.1:8000/api/permission/list", {params: {page_size: 100000}})
+      this.$axios.get(this.api + "/permission/list", {params: {page_size: 100000}})
       .then(res=>{
         this.permissionInfo = res.data.list;
       })
     },
     // 角色信息
     getRoleList(){
-      this.$axios.get("http://127.0.0.1:8000/api/role/list", {params:this.queryInfo})
+      this.$axios.get(this.api + "/role/list", {params:this.queryInfo})
       .then(res=>{
         this.roleList = res.data.list;
         this.total = res.data.pagination.total;
@@ -227,7 +227,7 @@ export default {
       //校验规则
       this.$refs.addRoleFormRef.validate((valid)=>{
         if(!valid) return alert("请输入正确的信息")
-        this.$axios.post('http://127.0.0.1:8000/api/role/create', this.addRoleForm)
+        this.$axios.post(this.api + '/role/create', this.addRoleForm)
             .then(res=>{
             // todo
         })
@@ -244,7 +244,7 @@ export default {
     },
     // 删除用户
     deleteRole(role){
-      this.$axios.delete('http://127.0.0.1:8000/api/role/delete', {params:{r_id:role.id}})
+      this.$axios.delete(this.api + '/role/delete', {params:{r_id:role.id}})
             .then(res=>{
               this.getRoleList();
         });
@@ -252,7 +252,7 @@ export default {
     // 编辑用户信息
     editRoleInfo(){
       console.log(this.editRoleForm)
-      this.$axios.put('http://127.0.0.1:8000/api/role/update', this.editRoleForm)
+      this.$axios.put(this.api + '/role/update', this.editRoleForm)
       .then(res=>{
         console.log(res)
         this.getRoleList()

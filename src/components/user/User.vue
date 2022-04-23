@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- 面包屑导航 -->
-      <el-breadcrumb separator="/">
+      <el-breadcrumb separator-class="el-icon-arrow-right">
         <el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item>
         <el-breadcrumb-item>用户管理</el-breadcrumb-item>
         <el-breadcrumb-item>用户列表</el-breadcrumb-item>
@@ -21,7 +21,7 @@
          <!-- 渲染数据表格 -->
         <el-table
         :data="userList"
-        height="250"
+        height="100%"
         :key="dataKey"
         border
         style="width: 100%">
@@ -29,7 +29,11 @@
             <el-table-column prop="username" label="姓名" width="180"> </el-table-column>
             <el-table-column prop="staff_code" label="工号"> </el-table-column>
             <el-table-column prop="staff_gender" label="性别"> </el-table-column>
-            <el-table-column prop="roles[1].title" label="角色"> </el-table-column>
+            <el-table-column label="角色">
+              <span slot-scope="scope">
+                    <p v-for="item in scope.row.roles" :key="item.id">{{ item.title }}</p>
+                </span>
+            </el-table-column>
             <el-table-column prop="date_joined" label="入职时间"> </el-table-column>
             <el-table-column prop="last_login" label="最后登录时间"> </el-table-column>
             <el-table-column prop="" label="操作">
@@ -48,6 +52,7 @@
         </el-table>
 
         <el-pagination
+          align="left"
           @size-change="sizeChange"
           @current-change="currentChange"
           :current-page.sync="queryInfo.page"
@@ -79,9 +84,6 @@
         <el-form-item label="手机号" prop="staff_phone">
           <el-input v-model="addUserForm.staff_phone"></el-input>
         </el-form-item>
-        <el-form-item label="时薪" prop="salary_pre_hour">
-          <el-input v-model="addUserForm.salary_pre_hour"></el-input>
-        </el-form-item>
         <el-form-item label="身份证" prop="id_card">
           <el-input v-model="addUserForm.id_card"></el-input>
         </el-form-item>
@@ -100,6 +102,9 @@
         </el-form-item>
         <el-form-item label="地址" prop="address">
           <el-input v-model="addUserForm.address"></el-input>
+        </el-form-item>
+         <el-form-item label="时薪" prop="salary_pre_hour">
+          <el-input v-model="addUserForm.salary_pre_hour"></el-input>
         </el-form-item>
         <el-form-item label="角色" prop="role">
            <el-select v-model="addUserForm.role" multiple placeholder="选择角色">
@@ -221,7 +226,7 @@ export default {
           username: "",
           staff_code: "",
           staff_gender: "",
-          roles: "",
+          roles: {},
           date_joined: "",
           last_login: "",
         }
@@ -283,10 +288,7 @@ export default {
         id_card: [
             { required: true, message: '请输入员工身份证编号', trigger: 'blur' },
             { min: 16, max: 16, message: '长度在16个字符', trigger: 'blur' }
-          ],
-        salary_pre_hour: [
-          { required: true, message: '请输入员工时薪', trigger: 'blur' },
-        ],
+          ]
     },
     //角色信息
     rolesInfo:[
@@ -314,14 +316,14 @@ export default {
     },
     //请求角色列表
     getRoleList(){
-      this.$axios.get('http://127.0.0.1:8000/api/role/list', {params:{page_size: 100000}})
+      this.$axios.get(this.api + '/role/list', {params:{page_size: 100000}})
         .then(res=>{
           this.rolesInfo = res.data.list;
       })
     },
     //请求用户列表数据
     getUserList(){
-      this.$axios.get('http://127.0.0.1:8000/api/user/list', {params:this.queryInfo})
+      this.$axios.get(this.api + '/user/list', {params:this.queryInfo})
         .then(res=>{
           this.userList = res.data.list;
           this.total = res.data.pagination.total;
@@ -347,7 +349,7 @@ export default {
       //校验规则
       this.$refs.addUserFormRef.validate((valid)=>{
         if(!valid) return alert("请输入正确的信息")
-        this.$axios.post('http://127.0.0.1:8000/api/user/create', this.addUserForm)
+        this.$axios.post(this.api + '/user/create', this.addUserForm)
             .then(res=>{
             // todo
             this.getUserList();
@@ -362,7 +364,7 @@ export default {
     // 编辑用户
     editUser(user){
         
-        this.$axios.get('http://127.0.0.1:8000/api/user/info', {params:{u_id:user.id}})
+        this.$axios.get(this.api + '/user/info', {params:{u_id:user.id}})
             .then(res=>{
               console.log(res)
             this.editUserForm.u_id = res.data.data.id;
@@ -387,7 +389,7 @@ export default {
         console.log(this.editUserForm)
         this.$refs.addUserFormRef.validate((valid)=>{
         if(!valid) return alert("请输入正确的信息")
-        this.$axios.put('http://127.0.0.1:8000/api/user/update', this.editUserForm)
+        this.$axios.put(this.api + '/user/update', this.editUserForm)
             .then(res=>{
             // todo
             console.log(res)
@@ -400,7 +402,7 @@ export default {
     },
     // 删除用户
     deleteUser(user){
-      this.$axios.delete('http://127.0.0.1:8000/api/user/delete', {params:{u_id:user.id}})
+      this.$axios.delete(this.api + '/user/delete', {params:{u_id:user.id}})
             .then(res=>{
               console.log(res)
               this.getUserList();

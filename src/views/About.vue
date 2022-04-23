@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h3>ABOUT页面</h3>
+    <!-- <h3>ABOUT页面</h3> -->
   </div>
 </template>
 
