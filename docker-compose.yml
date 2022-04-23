@@ -8,3 +8,6 @@ services:
       - 80:80
     networks:
      - my-net
+networks:
+  my-net:
+    external: true
