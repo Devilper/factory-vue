@@ -1,0 +1,8 @@
+version: '3.1'
+services:
+  vue:   
+    restart: always
+    container_name: factory-vue               
+    build: .
+    ports:                          #端口映射
+      - 80:80
