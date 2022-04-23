@@ -7,7 +7,8 @@ services:
     ports:                          #端口映射
       - 80:80
     networks:
-     - my-net
+      my-net:
+        ipv4_address: 172.21.0.4
 networks:
   my-net:
     external: true
