@@ -46,7 +46,7 @@
             <el-table-column prop="apply_staff_name.username" label="申请人"> </el-table-column>
             <el-table-column prop="" label="操作">
               <template slot-scope="scope">
-                <el-tooltip class="item" effect="dark" content="编辑" placement="top" >
+                <el-tooltip class="item" effect="dark" content="编辑" placement="top">
                   <el-button type="primary" icon="el-icon-edit" size="mini" @click="editPurchase(scope.row)" ></el-button>
                 </el-tooltip>
                 <el-tooltip class="item" effect="dark" content="审核" placement="top" v-if="scope.row.status==1?true:false">
@@ -123,7 +123,8 @@
       <span slot="title" class="dialog-title">
         <el-switch
         v-model="value"
-        @change="changeEdit">
+        @change="changeEdit"
+        :disabled="switchDisable">
         </el-switch>
       </span>
       <!-- 内容区 -->
@@ -173,6 +174,7 @@ export default {
         dialogDisable: false,
         value: false,
         dataKey: false,
+        switchDisable: false,
         // 请求角色列表的参数
         queryInfo:{
           good_name:"",
@@ -327,6 +329,13 @@ export default {
         this.value = false;
         this.editPurchaseForm = purchase;
         console.log(this.editPurchaseForm)
+        if (this.editPurchaseForm.status == 2){
+          this.switchDisable = true;
+        }else if(this.editPurchaseForm.status == 3){
+          this.switchDisable = true;
+        }else{
+          this.switchDisable = false;
+        }
     },
     // 编辑用户信息
     editPurchaseInfo(){

@@ -273,6 +273,9 @@ export default {
         if(!valid) return alert("请输入正确的信息")
         console.log("perm")
         console.log(this.addPermForm)
+        if (this.addPermForm.parent == ""){
+          this.addPermForm.parent = 0
+        }
         this.$axios.post(this.api + '/permission/create', this.addPermForm)
             .then(res=>{
             // todo

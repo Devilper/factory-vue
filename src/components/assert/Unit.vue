@@ -160,15 +160,13 @@ export default {
             version:"",
             facility_name:"",
             price:0,
-            buyer:{
-            },
+            buyer:0,
         },
         editUnitForm:{
             version:"",
             facility_name:"",
             price:0,
-            buyer:{
-            },
+            buyer:0,
         },
         addUnitFormRul:{
            version: [
