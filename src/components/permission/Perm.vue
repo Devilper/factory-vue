@@ -236,8 +236,8 @@ export default {
       this.getPermList(10000);
       this.addPermVisible = ! this.addPermVisible;
     },
-    getPermList(page_size=0){
-      if (page_size !== 0){
+    getPermList(page_size){
+      if (page_size === 10000){
         this.queryInfo.page_size = page_size;
       }
      this.$axios.get(this.api + "/permission/list",  {params:this.queryInfo})

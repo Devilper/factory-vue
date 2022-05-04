@@ -90,7 +90,7 @@
         <el-form-item label="年龄" prop="staff_age">
           <el-input v-model="addUserForm.staff_age"></el-input>
         </el-form-item>
-        <el-form-item label="住址" prop="staff_home">
+        <el-form-item label="籍贯" prop="staff_home">
           <el-input v-model="addUserForm.staff_home"></el-input>
         </el-form-item>
         <el-form-item label="性别" prop="staff_gender">
@@ -152,7 +152,7 @@
         <el-form-item label="年龄" prop="staff_age">
           <el-input v-model="editUserForm.staff_age"></el-input>
         </el-form-item>
-        <el-form-item label="住址" prop="staff_home">
+        <el-form-item label="籍贯" prop="staff_home">
           <el-input v-model="editUserForm.staff_home"></el-input>
         </el-form-item>
         <el-form-item label="性别" prop="staff_gender">

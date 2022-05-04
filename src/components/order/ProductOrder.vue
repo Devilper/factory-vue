@@ -32,13 +32,12 @@
             <el-table-column prop="order_price" label="单价"> </el-table-column>
             <el-table-column prop="order_total_price" label="总价"> </el-table-column>
             <el-table-column prop="order_time" label="订货时间"> </el-table-column>
-            <el-table-column prop="status" label="状态"> </el-table-column>
             <el-table-column prop="" label="操作">
               <template slot-scope="scope">
                 <el-tooltip class="item" effect="dark" content="编辑" placement="top">
                   <el-button type="primary" icon="el-icon-edit" size="mini" @click="editOrder(scope.row)" ></el-button>
                 </el-tooltip>
-                <el-tooltip class="item" effect="dark" content="确认" placement="top">
+                <el-tooltip class="item" effect="dark" content="确认" placement="top" v-if="scope.row.status==1?true:false">
                   <el-button type="danger" icon="el-icon-s-claim" size="mini" @click="auditOrder(scope.row)"></el-button>
                 </el-tooltip>
               </template>
@@ -57,47 +56,39 @@
        <!-- 添加角色对话框 -->
      <el-dialog
       title="添加生产单"
-      :visible.sync="addProduceVisible"
+      :visible.sync="addOrderVisible"
       width="50%"
       align="left">
       <!-- 内容区 -->
-      <el-form :model="addProduceForm" :rules="addProduceFormRul" ref="addProduceFormRef" label-width="100px" class="demo-ruleForm">
-         <el-form-item label="产品" prop="product_name">
-           <el-select v-model="addProduceForm.product_name" clearable placeholder="选择产品">
+
+      <el-form :model="addOrderForm" :rules="addOrderFormRul" ref="addOrderFormRef" label-width="100px" class="demo-ruleForm">
+        <el-form-item label="客户" prop="order_client" >
+          <el-input v-model="addOrderForm.order_client"></el-input>
+        </el-form-item>
+         <el-form-item label="产品" prop="order_name">
+           <el-select v-model="addOrderForm.order_name" clearable placeholder="选择产品">
             <el-option
               v-for="product in productInfo"
               :key="product.id"
               :label="product.product_name"
-              :value="product.product_name">
+              :value="product.id">
             </el-option>
            </el-select>
         </el-form-item>
-        <el-form-item label="今日产量" prop="today_done_num" >
-          <el-input v-model="addProduceForm.today_done_num"></el-input>
+        <el-form-item label="数量" prop="order_number" >
+          <el-input v-model="addOrderForm.order_number"></el-input>
         </el-form-item>
-        <el-form-item label="合格量" prop="qualified_num">
-          <el-input v-model="addProduceForm.qualified_num"></el-input>
+        <el-form-item label="单价" prop="order_price">
+          <el-input v-model="addOrderForm.order_price"></el-input>
         </el-form-item>
-        <el-form-item label="单位" prop="unit">
-          <el-input v-model="addProduceForm.unit"></el-input>
+        <el-form-item label="总价" prop="order_total_price">
+          <el-input v-model="addOrderForm.order_total_price"></el-input>
         </el-form-item>
-
-        <el-form-item label="员工" prop="staff_name">
-           <el-select v-model="addProduceForm.staff_name" clearable placeholder="选择员工">
-            <el-option
-                v-for="item in userInfo"
-                :key="item.id"
-                :label="item.username"
-                :value="item.username">
-            </el-option>
-           </el-select>
-        </el-form-item>
-        
       </el-form>
 
       <span slot="footer" class="dialog-footer">
-        <el-button @click="addProduceVisible = false">取 消</el-button>
-        <el-button type="primary" @click="addProduce">确 定</el-button>
+        <el-button @click="addOrderVisible = false">取 消</el-button>
+        <el-button type="primary" @click="addOrder">确 定</el-button>
       </span>
     </el-dialog>
     <!-- 修改角色对话框 -->
@@ -114,38 +105,29 @@
         </el-switch>
       </span>
       <!-- 内容区 -->
-      <el-form :model="editOrderForm" :rules="addProduceFormRul" ref="addProduceFormRef" label-width="100px" class="demo-ruleForm">
-         <el-form-item label="产品" prop="product_name">
-           <el-select v-model="editOrderForm.product_name" clearable placeholder="选择产品" :disabled="dialogDisable">
+      <el-form :model="editOrderForm" :rules="addOrderFormRul" ref="addOrderFormRef" label-width="100px" class="demo-ruleForm">
+        <el-form-item label="客户" prop="order_client" >
+          <el-input v-model="editOrderForm.order_client" :disabled="true"></el-input>
+        </el-form-item>
+         <el-form-item label="产品" prop="order_name">
+           <el-select v-model="editOrderForm.order_name" clearable placeholder="选择产品" :disabled="true">
             <el-option
               v-for="product in productInfo"
               :key="product.id"
               :label="product.product_name"
-              :value="product.product_name">
+              :value="product.id">
             </el-option>
            </el-select>
         </el-form-item>
-        <el-form-item label="今日产量" prop="today_done_num">
-          <el-input v-model="editOrderForm.today_done_num" :disabled="dialogDisable"></el-input>
+        <el-form-item label="数量" prop="order_number" >
+          <el-input v-model="editOrderForm.order_number" ></el-input>
         </el-form-item>
-        <el-form-item label="合格量" prop="qualified_num">
-          <el-input v-model="editOrderForm.qualified_num" :disabled="dialogDisable"></el-input>
+        <el-form-item label="单价" prop="order_price">
+          <el-input v-model="editOrderForm.order_price"></el-input>
         </el-form-item>
-        <el-form-item label="单位" prop="unit">
-          <el-input v-model="editOrderForm.unit" :disabled="dialogDisable"></el-input>
+        <el-form-item label="总价" prop="order_total_price">
+          <el-input v-model="editOrderForm.order_total_price"></el-input>
         </el-form-item>
-
-        <el-form-item label="员工" prop="staff_name">
-           <el-select v-model="editOrderForm.staff_name" clearable placeholder="选择员工" :disabled="dialogDisable">
-            <el-option
-                v-for="item in userInfo"
-                :key="item.id"
-                :label="item.username"
-                :value="item.username">
-            </el-option>
-           </el-select>
-        </el-form-item>
-        
       </el-form>
 
       <span slot="footer" class="dialog-footer">
@@ -165,8 +147,7 @@ export default {
         switchDisable: false,
         // 请求角色列表的参数
         queryInfo:{
-          staff_name:"",
-          product_name:"",
+          query:"",
           page:1,
           page_size:10,
         },
@@ -177,7 +158,7 @@ export default {
           }
         ],
         //添加弹话框
-        addProduceVisible:false,
+        addOrderVisible:false,
         // 编辑弹话框
         editOrderVisible:false,
         isA:true,
@@ -200,33 +181,31 @@ export default {
         // 当前数据总数
         total:0,
         // 添加角色数据
-        addProduceForm:{
+        addOrderForm:{
           id:0,
-          staff_name: "",
-          product_name: "",
-          today_done_num: 0,
-          qualified_num: 0,
-          unit: "",
+          order_client: "",
+          order_name: 0,
+          order_number: 0,
+          order_price: 0,
+          order_total_price: "",
         },
         // 添加角色数据
         editOrderForm:{
           id:0,
-          staff_name: "",
-          product_name: "",
-          today_done_num: "",
-          qualified_num: "",
-          unit: "",
-          status:0,
+          order_client: "",
+          order_name: 0,
+          order_number: 0,
+          order_price: 0,
+          order_total_price: "",
         },
         // 用户表单校验规则
-        addProduceFormRul:{
-            title: [
-                { required: true, message: '请输入角色名称', trigger: 'blur' },
+        addOrderFormRul:{
+            order_client: [
+                { required: true, message: '请输入用户名称', trigger: 'blur' },
                 { min: 2, max: 5, message: '长度在 2 到 5 个字符', trigger: 'blur' }
               ],
-            desc: [
-                { required: true, message: '请输入角色描述', trigger: 'blur' },
-                { min: 2, max: 200, message: '长度在 2 到 200 个字符', trigger: 'blur' }
+            order_name: [
+                { required: true, message: '请选择产品', trigger: 'blur' },
               ]
         },
         //权限信息
@@ -248,13 +227,13 @@ export default {
           this.dialogDisable = !this.value;
     },
         getProductList(){
-      this.$axios.get(this.api + "/product/list")
+      this.$axios.get(this.api + "/order/list")
       .then(res=>{
         this.productInfo = res.data.list;
       })
     },
         getOrderList(){
-      this.$axios.get(this.api + "/produce/list", {params:this.queryInfo})
+      this.$axios.get(this.api + "/order/list", {params:this.queryInfo})
       .then(res=>{
         this.OrderList = res.data.list;
         this.total = res.data.pagination.total;
@@ -272,18 +251,18 @@ export default {
       this.getOrderList();
     },
     // 添加事件
-    addProduce(){
+    addOrder(){
       //校验规则
-      this.$refs.addProduceFormRef.validate((valid)=>{
+      this.$refs.addOrderFormRef.validate((valid)=>{
         if(!valid) return alert("请输入正确的信息")
-        this.$axios.post(this.api + '/produce/create', this.addProduceForm)
+        this.$axios.post(this.api + '/order/create', this.addOrderForm)
             .then(res=>{
             // 刷新列表
             this.getOrderList();
         })
       });
       //关闭对话框
-      this.addProduceVisible = !this.addProduceVisible;
+      this.addOrderVisible = !this.addOrderVisible;
     },
      editOrder(produce){
         this.editOrderVisible = true;
@@ -300,7 +279,7 @@ export default {
     },
     // 编辑用户信息
     editOrderInfo(){
-      this.$axios.put(this.api + '/produce/update', this.editOrderForm)
+      this.$axios.put(this.api + '/order/update', this.editOrderForm)
       .then(res=>{
         this.getOrderList()
       });
@@ -309,18 +288,11 @@ export default {
     },
         // 审核
     auditOrder(produce){
-        this.$axios.get(this.api + '/produce/confirm', {params:{id:produce.id}})
+        this.$axios.get(this.api + '/order/confirm', {params:{id:produce.id}})
         .then(res=>{
         this.getOrderList()
       });
-    },
-     //生产
-    produceProduce(produce){
-        this.$axios.get(this.api + '/produce/produce', {params:{id:produce.id}})
-            .then(res=>{
-            this.getOrderList()
-      });
-    },
+    }
     }
 }
 </script>
